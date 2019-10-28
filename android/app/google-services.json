@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "6003852237",
+    "firebase_url": "https://freelancer-4107d.firebaseio.com",
+    "project_id": "freelancer-4107d",
+    "storage_bucket": "freelancer-4107d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:6003852237:android:8a1d99d564c0313ff0fa84",
+        "android_client_info": {
+          "package_name": "com.example.to_do"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "6003852237-ve13oo6a221o71mfbftuek7c1b6uucgm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCFhdt11gsBxlISrvlgKW29WXuDnttcN0g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "6003852237-ve13oo6a221o71mfbftuek7c1b6uucgm.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "6003852237-ji9noaoaqck4b96c5hsk9bkar6d039di.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "test.testinapp"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
