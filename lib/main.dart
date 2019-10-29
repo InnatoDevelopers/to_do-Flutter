@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 void main() => runApp(MyApp());
@@ -45,6 +46,25 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
+  String textoPrueba = "";
+
+  Future<void> getDataFromFirestore() async{
+
+     QuerySnapshot data = await  Firestore.instance.collection('to_do').getDocuments();
+
+     if(data != null){
+       setState(() {
+         textoPrueba = data.documents[0].data['Prueba'];
+       });
+     }
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    this.getDataFromFirestore();
+  }
 
   void _incrementCounter() {
     setState(() {
@@ -98,6 +118,9 @@ class _MyHomePageState extends State<MyHomePage> {
               '$_counter',
               style: Theme.of(context).textTheme.display1,
             ),
+            Text(
+              textoPrueba,style: TextStyle(fontSize: 15),
+            )
           ],
         ),
       ),
