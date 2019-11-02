@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import './ToDo.class.dart';
+import './form.dart';
 
 void main() => runApp(MyApp());
 
@@ -21,7 +23,8 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
+      home: MyHomePage(title: '¿Qué debo hacer?'),
+      routes: {"/form": (context) => new Formulario()},
     );
   }
 }
@@ -45,36 +48,61 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-  String textoPrueba = "";
-
-  Future<void> getDataFromFirestore() async{
-
-     QuerySnapshot data = await  Firestore.instance.collection('to_do').getDocuments();
-
-     if(data != null){
-       setState(() {
-         textoPrueba = data.documents[0].data['Prueba'];
-       });
-     }
-  }
+  ToDo toDo = new ToDo();
+  List<ToDo> listTodo = [];
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    this.getDataFromFirestore();
+
+    //listener Firestore
+    Firestore.instance.collection("to_do").snapshots().listen((onData) {
+      if (onData.documentChanges.length == 1) {
+        for (DocumentChange docChange in onData.documentChanges) {
+          DocumentSnapshot doc = docChange.document;
+          if (docChange.type == DocumentChangeType.added) {
+            ToDo newToDo =
+                new ToDo(id: doc.documentID, queHacer: doc.data["queHacer"]);
+            setState(() {
+              listTodo.add(newToDo);
+            });
+          } else if (docChange.type == DocumentChangeType.modified) {
+            for (var i = 0; i < listTodo.length; i++) {
+              if (listTodo[i].getId == doc.documentID) {
+                ToDo tempToDo = listTodo[i];
+                tempToDo.setQueHacer(doc.data["queHacer"].toString());
+                listTodo[i] = tempToDo;
+                setState(() {
+                  listTodo = listTodo;
+                });
+              }
+            }
+          } else if (docChange.type == DocumentChangeType.removed) {
+            listTodo.removeWhere((item) => item.getId == doc.documentID);
+            setState(() {
+              listTodo = listTodo;
+            });
+          }
+        }
+      }
+    });
+
+    this.getListToDo();
   }
 
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
+  Future<void> getListToDo() async {
+    List<ToDo> listTemp = await toDo.getListToDo();
+
+    if (listTemp != null) {
+      setState(() {
+        listTodo = listTemp;
+      });
+    }
+  }
+
+  void _toForm() {
+    Navigator.of(context).pushNamed("/form");
   }
 
   @override
@@ -90,43 +118,68 @@ class _MyHomePageState extends State<MyHomePage> {
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
+        centerTitle: true,
       ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Invoke "debug painting" (press "p" in the console, choose the
-          // "Toggle Debug Paint" action from the Flutter Inspector in Android
-          // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-          // to see the wireframe for each widget.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.display1,
-            ),
-            Text(
-              textoPrueba,style: TextStyle(fontSize: 15),
-            )
-          ],
-        ),
+      body: ListView(
+        children: listTodo.map((value) {
+          return Card(
+            borderOnForeground: true,
+            child: Container(
+                padding: EdgeInsets.only(left: 10.0),
+                height: 100,
+                child: Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: Text(
+                        value.getQueHacer,
+                        style: TextStyle(fontSize: 20.0),
+                      ),
+                    ),
+                    Expanded(
+                      child: Container(
+                        alignment: Alignment.centerRight,
+                        padding: EdgeInsets.only(right: 15.0),
+                        child: IconButton(
+                          icon: Icon(
+                            Icons.delete_forever,
+                            size: 40.0,
+                            color: Colors.red,
+                          ),
+                          onPressed: () async {
+                            await toDo.deleteToDoByID(value.getId);
+                          },
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: Container(
+                        alignment: Alignment.centerRight,
+                        padding: EdgeInsets.only(right: 15.0),
+                        child: IconButton(
+                          icon: Icon(
+                            Icons.arrow_right,
+                            size: 40.0,
+                          ),
+                          onPressed: () async {
+                            ToDo todoByID = await toDo.getToDoByID(value.getId);
+
+                            Navigator.of(context).push(new MaterialPageRoute(
+                                builder: (context) => new Formulario(
+                                      queHacer: todoByID.getQueHacer,
+                                      id: value.getId,
+                                    )));
+                          },
+                        ),
+                      ),
+                    )
+                  ],
+                )),
+          );
+        }).toList(),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
+        onPressed: _toForm,
+        tooltip: 'Agregar',
         child: Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
