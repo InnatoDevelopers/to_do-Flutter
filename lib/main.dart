@@ -127,17 +127,18 @@ class _MyHomePageState extends State<MyHomePage> {
             child: Container(
                 padding: EdgeInsets.only(left: 10.0),
                 height: 100,
-                child: Row(
+                child: Column(
                   children: <Widget>[
-                    Expanded(
-                      child: Text(
+                    Text(
                         value.getQueHacer,
                         style: TextStyle(fontSize: 20.0),
                       ),
-                    ),
+                    Row(
+                  children: <Widget>[
+                    
                     Expanded(
                       child: Container(
-                        alignment: Alignment.centerRight,
+                        alignment: Alignment.bottomLeft,
                         padding: EdgeInsets.only(right: 15.0),
                         child: IconButton(
                           icon: Icon(
@@ -153,7 +154,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                     Expanded(
                       child: Container(
-                        alignment: Alignment.centerRight,
+                        alignment: Alignment.bottomRight,
                         padding: EdgeInsets.only(right: 15.0),
                         child: IconButton(
                           icon: Icon(
@@ -172,6 +173,8 @@ class _MyHomePageState extends State<MyHomePage> {
                         ),
                       ),
                     )
+                  ],
+                )
                   ],
                 )),
           );

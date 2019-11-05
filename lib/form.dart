@@ -29,7 +29,7 @@ class _FormularioState extends State<Formulario> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Agregar Elemento"),
+        title: Text(widget.id != null ? "Actualizar Elemento" : "Agregar Elemento"),
         centerTitle: true,
       ),
       body: Container(
