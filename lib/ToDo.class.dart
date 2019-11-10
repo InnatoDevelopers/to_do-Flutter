@@ -4,13 +4,16 @@ class ToDo {
   String queHacer;
   String id;
 
+  /*Métodos getters*/
   String get getQueHacer => queHacer;
   String get getId => id;
 
+  /*Método set*/
   void setQueHacer(String queHacer) {
     this.queHacer = queHacer;
   }
 
+  /*Constantes*/
   ToDo({this.queHacer, this.id});
 
   Future<List<ToDo>> getListToDo() async {
@@ -33,6 +36,8 @@ class ToDo {
     if (doc != null) {
       print(doc.data);
       return new ToDo(id: id, queHacer: doc.data['queHacer']);
+    } else {
+      return null;
     }
   }
 
